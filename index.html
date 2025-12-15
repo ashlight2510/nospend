@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>내가 안 산 것들의 총자산 💸</title>
+
+    <!-- SEO / OG -->
+    <meta
+      name="description"
+      content="커피·술·배달·택시·충동쇼핑… 안 샀으면 얼마 모였을까? 한 번에 계산!"
+    />
+    <meta property="og:title" content="내가 안 산 것들의 총자산 💸" />
+    <meta
+      property="og:description"
+      content="안 샀으면 모였을 돈, 바로 계산해서 밈으로 공유!"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="og-image.png" />
+    <meta property="og:image:alt" content="내가 안 산 것들의 총자산 계산기" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        font-size: 17px;
+      }
+      @media (min-width: 640px) {
+        :root {
+          font-size: 16px;
+        }
+      }
+      .glass {
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.7);
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100"
+  >
+    <main class="max-w-3xl mx-auto px-4 py-10">
+      <header class="mb-7">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-sm"
+        >
+          💸 밈 계산기
+        </div>
+        <h1 class="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight">
+          내가 안 산 것들의 총자산
+        </h1>
+        <p class="mt-2 text-slate-300">
+          “그때 그거만 안 샀어도…”를 숫자로 바꿔드립니다.
+        </p>
+      </header>
+
+      <section
+        class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6 shadow-xl"
+      >
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-slate-300">시작 연도</label>
+            <input
+              id="startYear"
+              type="number"
+              min="1990"
+              max="2025"
+              class="mt-2 w-full rounded-2xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-white/20"
+            />
+          </div>
+          <div>
+            <label class="text-sm text-slate-300">종료 연도 (올해)</label>
+            <input
+              id="endYear"
+              type="number"
+              min="1990"
+              max="2025"
+              class="mt-2 w-full rounded-2xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-white/20"
+            />
+          </div>
+        </div>
+
+        <div class="mt-6 space-y-5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold">월 평균 지출(안 샀다면)</h2>
+            <button
+              id="resetBtn"
+              class="text-sm px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition"
+            >
+              초기화
+            </button>
+          </div>
+
+          <div id="items" class="space-y-4"></div>
+
+          <div class="mt-6 flex flex-col sm:flex-row gap-3">
+            <button
+              id="calcBtn"
+              class="flex-1 rounded-2xl bg-white text-slate-950 font-bold py-3 hover:opacity-90 transition"
+            >
+              계산하기
+            </button>
+            <button
+              id="randomBtn"
+              class="flex-1 rounded-2xl bg-white/10 border border-white/10 font-semibold py-3 hover:bg-white/15 transition"
+            >
+              밈 세팅(랜덤)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="resultWrap" class="mt-6 hidden">
+        <div
+          class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6 shadow-xl"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm text-slate-300">결과</p>
+              <h3 class="mt-1 text-2xl font-extrabold">
+                💰 당신이 안 산 인생의 총자산
+              </h3>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-slate-400">합계</p>
+              <p id="total" class="text-2xl font-extrabold"></p>
+            </div>
+          </div>
+
+          <div id="breakdown" class="mt-4 grid sm:grid-cols-2 gap-3"></div>
+
+          <div
+            class="mt-5 rounded-2xl bg-slate-900/50 border border-white/10 p-4"
+          >
+            <p class="text-sm text-slate-300">오늘의 밈 한 줄</p>
+            <p id="memeLine" class="mt-1 font-semibold"></p>
+          </div>
+
+          <div class="mt-5 flex flex-col sm:flex-row gap-3">
+            <button
+              id="shareBtn"
+              class="flex-1 rounded-2xl bg-emerald-400 text-slate-950 font-bold py-3 hover:opacity-90 transition"
+            >
+              공유하기(모바일)
+            </button>
+            <button
+              id="copyBtn"
+              class="flex-1 rounded-2xl bg-white/10 border border-white/10 font-semibold py-3 hover:bg-white/15 transition"
+            >
+              결과 텍스트 복사
+            </button>
+          </div>
+
+          <div class="mt-6 border-t border-white/10 pt-5">
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-sm text-slate-300">다음 밈으로 더 때리기</p>
+              <button
+                id="toQuizBtn"
+                class="text-sm px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition"
+              >
+                💸 비트코인 안 산 죄 계산기 →
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="mt-8 text-center text-xs text-slate-500">
+        made for funnyfunny / ashlight ✨
+      </footer>
+    </main>
+
+    <script>
+      const NOW_YEAR = 2025;
+
+      const ITEMS = [
+        {
+          key: "coffee",
+          label: "☕ 커피",
+          hint: "예: 6,000원 x 20잔",
+          defaultMonthly: 80000,
+        },
+        {
+          key: "alcohol",
+          label: "🍺 술",
+          hint: "예: 주 1~2회",
+          defaultMonthly: 160000,
+        },
+        {
+          key: "delivery",
+          label: "🍔 배달",
+          hint: "예: 주 2~4회",
+          defaultMonthly: 140000,
+        },
+        {
+          key: "taxi",
+          label: "🚕 택시",
+          hint: "예: 새벽 귀가/이동",
+          defaultMonthly: 90000,
+        },
+        {
+          key: "shopping",
+          label: "🛍️ 충동쇼핑",
+          hint: "예: ‘필요해서 샀다’",
+          defaultMonthly: 120000,
+        },
+      ];
+
+      const MEMES = [
+        "행복은 샀고, 자산은 안 샀다.",
+        "그때 그거 말고… 이거 샀어야 했네.",
+        "돈은 어디로 갔을까? 내 기분 좋은 기억 속으로.",
+        "그래도 그때 맛있었으면 됐다… (아마도)",
+        "지출은 추억이고, 저축은 전설이다.",
+      ];
+
+      const $items = document.getElementById("items");
+      const $startYear = document.getElementById("startYear");
+      const $endYear = document.getElementById("endYear");
+      const $resultWrap = document.getElementById("resultWrap");
+      const $total = document.getElementById("total");
+      const $breakdown = document.getElementById("breakdown");
+      const $memeLine = document.getElementById("memeLine");
+
+      function fmtKRW(n) {
+        const v = Math.max(0, Math.floor(n || 0));
+        return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
+      }
+
+      function clamp(n, a, b) {
+        return Math.max(a, Math.min(b, n));
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem("nospend_state");
+          return raw ? JSON.parse(raw) : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function saveState(state) {
+        try {
+          localStorage.setItem("nospend_state", JSON.stringify(state));
+        } catch {}
+      }
+
+      function buildItems(values = {}) {
+        $items.innerHTML = "";
+        for (const it of ITEMS) {
+          const value = Number(values[it.key] ?? it.defaultMonthly);
+          const row = document.createElement("div");
+          row.className =
+            "rounded-2xl border border-white/10 bg-slate-900/40 p-4";
+
+          row.innerHTML = `
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="font-bold">${it.label}</div>
+              <div class="text-xs text-slate-400 mt-0.5">${it.hint}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-slate-400">월</div>
+              <div class="font-extrabold" data-val="${it.key}">${fmtKRW(
+            value
+          )}</div>
+            </div>
+          </div>
+          <input data-range="${
+            it.key
+          }" type="range" min="0" max="600000" step="10000"
+                 class="mt-3 w-full" value="${value}">
+        `;
+          $items.appendChild(row);
+        }
+
+        $items.querySelectorAll("input[data-range]").forEach((inp) => {
+          inp.addEventListener("input", () => {
+            const key = inp.getAttribute("data-range");
+            const val = Number(inp.value);
+            const out = $items.querySelector(`[data-val="${key}"]`);
+            if (out) out.textContent = fmtKRW(val);
+            persist();
+          });
+        });
+      }
+
+      function getValues() {
+        const values = {};
+        $items.querySelectorAll("input[data-range]").forEach((inp) => {
+          values[inp.getAttribute("data-range")] = Number(inp.value);
+        });
+        return values;
+      }
+
+      function persist() {
+        const state = {
+          startYear: Number($startYear.value),
+          endYear: Number($endYear.value),
+          values: getValues(),
+        };
+        saveState(state);
+      }
+
+      function yearsBetween(startY, endY) {
+        const s = clamp(Number(startY), 1990, NOW_YEAR);
+        const e = clamp(Number(endY), 1990, NOW_YEAR);
+        const years = Math.max(0, e - s + 1);
+        return { s, e, years };
+      }
+
+      function calc() {
+        const { s, e, years } = yearsBetween($startYear.value, $endYear.value);
+        $startYear.value = s;
+        $endYear.value = e;
+
+        const values = getValues();
+        const breakdown = [];
+        let sum = 0;
+
+        for (const it of ITEMS) {
+          const monthly = Number(values[it.key] || 0);
+          const total = monthly * 12 * years;
+          sum += total;
+          breakdown.push({ label: it.label, total, monthly });
+        }
+
+        // render
+        $total.textContent = fmtKRW(sum);
+        $breakdown.innerHTML = breakdown
+          .map(
+            (b) => `
+        <div class="rounded-2xl bg-slate-900/40 border border-white/10 p-4">
+          <div class="flex items-center justify-between">
+            <div class="font-bold">${b.label}</div>
+            <div class="font-extrabold">${fmtKRW(b.total)}</div>
+          </div>
+          <div class="mt-2 text-xs text-slate-400">월 ${fmtKRW(
+            b.monthly
+          )} × 12 × ${years}년</div>
+        </div>
+      `
+          )
+          .join("");
+
+        $memeLine.textContent = MEMES[Math.floor(Math.random() * MEMES.length)];
+
+        $resultWrap.classList.remove("hidden");
+        persist();
+
+        // scroll to result
+        setTimeout(
+          () =>
+            $resultWrap.scrollIntoView({ behavior: "smooth", block: "start" }),
+          60
+        );
+
+        return { s, e, years, sum, breakdown };
+      }
+
+      function buildShareText(payload) {
+        const top3 = [...payload.breakdown]
+          .sort((a, b) => b.total - a.total)
+          .slice(0, 3);
+
+        const lines = [
+          "💸 내가 안 산 것들의 총자산",
+          `기간: ${payload.s}~${payload.e} (${payload.years}년)`,
+          "",
+          ...top3.map((x) => `${x.label} 안 샀으면: +${fmtKRW(x.total)}`),
+          "",
+          `💰 총자산: ${fmtKRW(payload.sum)}`,
+          `밈: ${$memeLine.textContent}`,
+        ];
+        return lines.join("\n");
+      }
+
+      // init
+      (function init() {
+        const saved = loadState();
+        $startYear.value = saved?.startYear ?? 2018;
+        $endYear.value = saved?.endYear ?? NOW_YEAR;
+
+        buildItems(saved?.values ?? {});
+        $startYear.addEventListener("input", persist);
+        $endYear.addEventListener("input", persist);
+
+        document.getElementById("calcBtn").addEventListener("click", calc);
+
+        document.getElementById("resetBtn").addEventListener("click", () => {
+          $startYear.value = 2018;
+          $endYear.value = NOW_YEAR;
+          buildItems({});
+          $resultWrap.classList.add("hidden");
+          persist();
+        });
+
+        document.getElementById("randomBtn").addEventListener("click", () => {
+          const rnd = {};
+          for (const it of ITEMS) {
+            // 0~400k 사이, 약간 현실적으로
+            const v = Math.round((Math.random() * 400000) / 10000) * 10000;
+            rnd[it.key] = v;
+          }
+          buildItems(rnd);
+          $resultWrap.classList.add("hidden");
+          persist();
+        });
+
+        document
+          .getElementById("copyBtn")
+          .addEventListener("click", async () => {
+            const payload = calc();
+            const text = buildShareText(payload);
+            try {
+              await navigator.clipboard.writeText(text);
+              alert("복사됨! (붙여넣기 하면 바로 공유 가능)");
+            } catch {
+              prompt("복사해서 공유해줘:", text);
+            }
+          });
+
+        document
+          .getElementById("shareBtn")
+          .addEventListener("click", async () => {
+            const payload = calc();
+            const text = buildShareText(payload);
+            const url = location.href;
+            if (navigator.share) {
+              try {
+                await navigator.share({
+                  title: "내가 안 산 것들의 총자산",
+                  text,
+                  url,
+                });
+                return;
+              } catch {}
+            }
+            try {
+              await navigator.clipboard.writeText(text + "\n\n" + url);
+              alert("공유용 텍스트+링크 복사됨!");
+            } catch {
+              prompt("복사해서 공유해줘:", text + "\n\n" + url);
+            }
+          });
+
+        // 내부링크 버튼 (네가 실제로 배포 후 URL 바꿔)
+        document.getElementById("toQuizBtn").addEventListener("click", () => {
+          // 같은 폴더에 waste-index.html 올렸다면:
+          const next = new URL(location.href);
+          next.pathname = next.pathname.replace(/[^/]*$/, "waste-index.html");
+          location.href = next.toString();
+        });
+      })();
+    </script>
+  </body>
+</html>
