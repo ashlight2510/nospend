@@ -16,8 +16,11 @@
       content="안 샀으면 모였을 돈, 바로 계산해서 밈으로 공유!"
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="og-image.png" />
-    <meta property="og:image:alt" content="내가 안 산 것들의 총자산 계산기" />
+    <meta
+      property="og:image"
+      content="https://dummyimage.com/1200x630/1f2937/f9fafb&text=Missed+Gains+Calculator"
+    />
+    <meta property="og:image:alt" content="Missed Gains Calculator" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#0f172a" />
 
@@ -446,12 +449,9 @@
             }
           });
 
-        // 내부링크 버튼 (네가 실제로 배포 후 URL 바꿔)
+        // 외부 링크 버튼
         document.getElementById("toQuizBtn").addEventListener("click", () => {
-          // 같은 폴더에 waste-index.html 올렸다면:
-          const next = new URL(location.href);
-          next.pathname = next.pathname.replace(/[^/]*$/, "waste-index.html");
-          location.href = next.toString();
+          location.href = "https://bit.funnyfunny.cloud/";
         });
       })();
     </script>
